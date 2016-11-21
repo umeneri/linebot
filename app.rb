@@ -49,7 +49,7 @@ post '/callback' do
           type: 'text',
           text: event.message['text']
         }
-        client.reply_message(event['replyToken'], message)
+        p client.reply_message(event['replyToken'], message).inspect
       when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
         p 'content'
         response = client.get_message_content(event.message['id'])
