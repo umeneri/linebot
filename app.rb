@@ -7,6 +7,10 @@ get '/' do
   'hello'
 end
 
+get '/ls' do
+  ls = `ls`
+  p ls
+end
 get '/path/to' do
   "this is [/path/to]"
 end
@@ -18,8 +22,6 @@ end
 get '/erb_template_page' do
   erb :erb_template_page
 end
-
-
 
 def client
   @client ||= Line::Bot::Client.new { |config|
@@ -55,6 +57,18 @@ post '/callback' do
         response = client.get_message_content(event.message['id'])
         tf = Tempfile.open("content")
         tf.write(response.body)
+      when Line::Bot::Event::MessageType::Location
+        q = event.message
+        p event.message['id']
+        p event.message['text']
+        p event.message['address']
+        p event.message['latitude']
+        p event.message['longitude']
+        json = GNaviCrient.get_restaurant_json(q)
+        cards = GNaviCrient.parse_to_card(json)
+        # json
+        message = build_carousel_massage(cards)
+        p client.reply_message(event['replyToken'], message).inspect
       end
     end
   }
