@@ -1,7 +1,10 @@
 require 'sinatra'
 require 'sinatra/reloader'
+require 'logger'
 require 'line/bot'
+require './gnavi_search'
 
+logger = Logger.new('sinatra.log')
 
 get '/' do
   'hello'
@@ -23,11 +26,45 @@ get '/erb_template_page' do
   erb :erb_template_page
 end
 
+
+def rest_buttons(latitude: 35.670083, longitude: 139.763267)
+  # rests = GnaviClient.search_with_present_location(
+  #   latitude: latitude,
+  #   longitude: longitude,
+  #   range: 2,
+  #   hit: 5,
+  #   word: '寿司',
+  # )
+
+  rests = search_with_present_location(
+    latitude: 35.670083,
+    longitude: 139.763267,
+    word: '寿司'
+  )
+
+  build_rest_buttons(rests[0])
+end
+
+
+get '/gnavi' do
+  logger.info 'rest_buttons'
+
+  json = JSON.pretty_generate(rest_buttons).gsub(/\n/, '<br>')
+  logger.info json
+
+  json.gsub(/\n/, '<br>')
+end
+
+
 def client
   @client ||= Line::Bot::Client.new { |config|
     config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
     config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
   }
+end
+
+get '/line' do
+  p client.reply_message('111', {type: 'text', text: 'test'}).inspect
 end
 
 post '/callback' do
@@ -58,16 +95,15 @@ post '/callback' do
         tf = Tempfile.open("content")
         tf.write(response.body)
       when Line::Bot::Event::MessageType::Location
-        q = event.message
         p event.message['id']
-        p event.message['text']
         p event.message['address']
         p event.message['latitude']
         p event.message['longitude']
-        json = GNaviCrient.get_restaurant_json(q)
-        cards = GNaviCrient.parse_to_card(json)
-        # json
-        message = build_carousel_massage(cards)
+
+        message = rest_buttons(latitude: event.message['latitude'],
+                               longitude: event.message['longitude'])
+
+        p message
         p client.reply_message(event['replyToken'], message).inspect
       end
     end
