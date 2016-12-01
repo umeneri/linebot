@@ -93,7 +93,7 @@ def build_rest_buttons(rest)
     altText: "this is a buttons template",
     template: {
       type: "buttons",
-      # thumbnailImageUrl: image_url,
+      thumbnailImageUrl: image_url,
       title: title,
       text: text,
       actions: actions,
