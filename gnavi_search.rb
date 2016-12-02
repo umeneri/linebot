@@ -55,7 +55,11 @@ def build_rest_detail(rest)
 end
 
 def to_https(url)
-  url.gsub(/https?/, 'https')
+  if url.class == String
+    url.gsub(/https?/, 'https')
+  else
+    nil
+  end
 end
 
 def build_rest_buttons(rest)
@@ -88,17 +92,20 @@ def build_rest_buttons(rest)
   text = build_rest_detail(rest)
   actions = [map_action, tel_action, url_action, category_action]
 
-  {
+  message = {
     type: "template",
     altText: "this is a buttons template",
     template: {
       type: "buttons",
-      thumbnailImageUrl: image_url,
       title: title,
       text: text,
       actions: actions,
     }
   }
+
+  message[:template][:thumbnailImageUrl] = image_url if image_url
+
+  message
 end
 
 # rests = search_with_present_location(

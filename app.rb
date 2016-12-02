@@ -39,7 +39,8 @@ def rest_buttons(latitude: 35.670083, longitude: 139.763267)
   rests = search_with_present_location(
     latitude: 35.670083,
     longitude: 139.763267,
-    word: '寿司'
+    word: '寿司',
+    # word: 'カレー',
   )
 
   build_rest_buttons(rests[0])
@@ -52,7 +53,7 @@ get '/gnavi' do
   json = JSON.pretty_generate(rest_buttons).gsub(/\n/, '<br>')
   logger.info json
 
-  json.gsub(/\n/, '<br>')
+  json
 end
 
 
