@@ -116,7 +116,7 @@ post '/callback' do
 
         carousel_message = gnavi_bot.rest_carousel
 
-        messages = [credit_message, result_message, carousel_message]
+        messages = [result_message, carousel_message, credit_message]
 
         ap messages
 
