@@ -38,6 +38,28 @@ class GnaviBot
     yield(self) if block_given?
   end
 
+  def search
+    @store.search_with_present_location
+  end
+
+  def select_candidate_by_category
+    @store.group_candidate('category_name_l')
+  end
+
+  def select_candidate_in_category(category_name_l)
+    @store.select_candidate_in_category(category_name_l)
+  end
+
+  def rest_button
+    build_button(@store.rests[0])
+  end
+
+  def rest_carousel
+    build_carousel(@store.cands) if @store.cands
+  end
+
+  # View
+
   def build_rest_detail(rest)
     s = "#{rest['category_name_l']}/#{rest['category_name_s']}/#{rest['category']}, #{rest['budget']}, #{rest['lunch']}, #{rest['lunch']}"
     s
@@ -51,23 +73,6 @@ class GnaviBot
     end
   end
 
-  def search
-    @store.search_with_present_location
-  end
-
-  def select_candidate_by_category
-    @store.group_candidate('category_name_l')
-  end
-
-  def rest_button
-    build_button(@store.rests[0])
-  end
-
-  def rest_carousel
-    build_carousel(@store.cands.first(5)) if @store.cands
-  end
-
-  # View
   # thumbnailImageUrl  String  画像のURL (1000文字以内)
   # HTTPS
   # JPEGまたはPNG
@@ -83,9 +88,9 @@ class GnaviBot
   # 最大4個
   def build_button(rest)
     map_action = {
-      "type": "postback",
+      "type": "uri",
       "label": "地図を見る",
-      "data": "action=map&latitude=#{rest['latitude']}&longitude=#{rest['longitude']}"
+      "uri": "googlemaps://?center=#{rest['latitude']},#{rest['longitude']}&mapmode=streetview"
     }
 
     tel_action = {
@@ -103,7 +108,7 @@ class GnaviBot
     category_action = {
       "type": "postback",
       "label": "同じジャンル",
-      "data": "action=category&category=#{rest['category']}"
+      "data": "#{rest['category']}"
     }
 
     image_url = to_https(rest['image_url'])
@@ -129,9 +134,9 @@ class GnaviBot
 
   def build_column(rest)
     map_action = {
-      "type": "postback",
+      "type": "uri",
       "label": "地図を見る",
-      "data": "googlemaps://?center=#{rest['latitude']},#{rest['longitude']}&mapmode=streetview"
+      "uri": "googlemaps://?center=#{rest['latitude']},#{rest['longitude']}&mapmode=streetview"
     }
 
     url_action = {
@@ -143,7 +148,7 @@ class GnaviBot
     category_action = {
       "type": "postback",
       "label": "同じジャンル",
-      "data": "action=category&category_name_l=#{rest['category_name_l']}"
+      "data": "#{rest['category']}"
     }
 
     image_url = to_https(rest['image_url'])
@@ -162,8 +167,9 @@ class GnaviBot
     message
   end
 
+  # columns: 最大5個
   def build_carousel(rests=@store.cands)
-    columns = rests.map {|rest| build_column(rest) }
+    columns = rests.first(5).map {|rest| build_column(rest) }
 
     {
       type: "template",
@@ -176,16 +182,16 @@ class GnaviBot
   end
 end
 
-def gnavi_bot(options = {})
-  if @gnavi_bot.nil?
-    @gnavi_bot = GnaviBot.new(options)
-  elsif options == {}
-    @gnavi_bot
-  else
-    @gnavi_bot.update(options)
-  end
-end
-
+# def gnavi_bot(options = {})
+#   if @gnavi_bot.nil?
+#     @gnavi_bot = GnaviBot.new(options)
+#   elsif options == {}
+#     @gnavi_bot
+#   else
+#     @gnavi_bot.update(options)
+#   end
+# end
+#
 # gnavi_bot(
 #   longitude: 139.72420290112495,
 #   latitude:  35.69855853730646,

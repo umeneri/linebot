@@ -44,10 +44,10 @@ class GnaviStore
     @rests = GnaviClient.search_with_present_location(
       latitude: @latitude,
       longitude: @longitude,
-      range: 2,
+      range: @range || 2,
       hit_per_page: 100,
       # word: @word,
-      category_l: @category,
+      category_l: @category || '',
     )
 
     return @rests = [] unless @rests
@@ -137,7 +137,8 @@ class GnaviStore
   end
 
   def distance(rest, latitude, longitude)
-    (rest['latitude'].to_i - latitude.to_i) * 2 + (rest['longitude'].to_i - longitude.to_i) * 2
+    (rest['latitude'].to_f - latitude.to_f) ** 2
+    + (rest['longitude'].to_f - longitude.to_f) ** 2
   end
 
   def set_distance(rest)
@@ -148,6 +149,7 @@ class GnaviStore
     p 'rest count', @rests.size
 
     @rests = @rests.select do |rest|
+      set_distance(rest)
       # tempolary
       opening?(Time.new(2016, 12, 7, 11), rest['holiday']) && set_amount(rest)
     end
@@ -172,18 +174,33 @@ class GnaviStore
 
     p 'cand count', @cands.size
 
-    @cands
+    @cands = sort_cands(@cands)
+  end
+
+  def select_candidate_in_category(category_name_l)
+    @cands = @rests.select do |rest|
+      rest['category_name_l'] == category_name_l
+    end
+
+    p 'rest count', @cands.size
+
+    filter_with_group(@cands, 'category_name_s')
   end
 
   def group_candidate(key)
-    cand_groups = @rests.group_by do |rest|
+    filter_with_group(@rests, key)
+  end
+
+  def filter_with_group(rests, key)
+    cand_groups = rests.group_by do |rest|
       rest[key]
     end
 
     @cands = cand_groups.map do |k, v|
       p 'group', k
-      # ap v
-      filter_in_group_with_amount(v)
+      # filter_in_group_with_amount(v)
+      cands = sort_cands(v)
+      cands.first
     end
   end
 
@@ -195,16 +212,27 @@ class GnaviStore
 
   def filter_in_group_with_distance(group, opt = {})
     group.min_by do |rest|
-      rest['distance'].to_i
+      rest['distance'].to_f
+    end
+  end
+
+  def sort_cands(cands)
+    cands.sort do |x, y|
+      if x['amount'] && y['amount'] && x['amount'] == y['amount']
+        x['distance'].to_f <=> y['distance'].to_f
+      else
+        x['amount'].to_i <=> y['amount'].to_i
+      end
     end
   end
 end
 
 # GnaviStore.test_opening
-
+#
 # gs = GnaviStore.new(
-#     longitude: 139.72420290112495,
+#   longitude: 139.72420290112495,
 #   latitude: 35.69855853730646,
+#   range: 5,
 #   #
 #   # longitude: 139.763267,
 #   # latitude: 35.670083,
@@ -214,9 +242,10 @@ end
 #
 # gs.search_with_present_location
 # gs.filter_rests
-# # pp '++++++++++++++++++++++++++++++'
-# # ap gs.group_candidate('category_name_l')
 # pp '++++++++++++++++++++++++++++++'
+# cands = gs.group_candidate('category_name_l')
+# pp '++++++++++++++++++++++++++++++'
+# ap gs.select_candidate_in_category(cands.first['category_name_l'])
 # ap gs.select_candidate_by_name(['category', 'pr', 'category_name_l'], 'カレー')
 
 # rests = gs.search_with_present_location.map do |rest|

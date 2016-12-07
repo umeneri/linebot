@@ -36,15 +36,6 @@ get '/gnavi' do
   'gnavi'
 end
 
-get '/category' do
-  logger.info 'category'
-
-  json = JSON.pretty_generate(gnavi_bot.rest_buttons).gsub(/\n/, '<br>')
-  logger.info json
-
-  json
-end
-
 def gnavi_bot(options = {})
   if @gnavi_bot.nil?
     @gnavi_bot = GnaviBot.new(options)
@@ -101,7 +92,8 @@ post '/callback' do
 
         gnavi_bot(latitude: event.message['latitude'],
                   longitude: event.message['longitude'],
-                 category: 'カレー',
+                  category: 'カレー',
+                  range: 4,
                  )
         gnavi_bot.search
         gnavi_bot.select_candidate_by_category
@@ -111,6 +103,16 @@ post '/callback' do
         ap message
         p client.reply_message(event['replyToken'], message).inspect
       end
+    when Line::Bot::Event::PostBack
+        p 'postback'
+        ap event
+
+        category_name_l = event['postback']['data']
+        gnavi_bot.select_candidate_in_category(category_name_l)
+        ap gnavi_bot.store.cands
+        message = gnavi_bot.rest_carousel
+
+        p client.reply_message(event['replyToken'], message).inspect
     end
   }
 
