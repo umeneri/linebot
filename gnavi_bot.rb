@@ -73,6 +73,10 @@ class GnaviBot
     end
   end
 
+  def to_map_url(latitude, longitude)
+    "https://www.google.com/maps/preview/@#{"%.7f" % longitude},#{"%.7f" % latitude},15z"
+  end
+
   # thumbnailImageUrl  String  画像のURL (1000文字以内)
   # HTTPS
   # JPEGまたはPNG
@@ -90,7 +94,7 @@ class GnaviBot
     map_action = {
       "type": "uri",
       "label": "地図を見る",
-      "uri": "googlemaps://?center=#{rest['latitude']},#{rest['longitude']}&mapmode=streetview"
+      "uri": to_map_url(rest['latitude'], rest['longitude'])
     }
 
     tel_action = {
@@ -136,7 +140,7 @@ class GnaviBot
     map_action = {
       "type": "uri",
       "label": "地図を見る",
-      "uri": "googlemaps://?center=#{rest['latitude']},#{rest['longitude']}&mapmode=streetview"
+      "uri": to_map_url(rest['latitude'], rest['longitude'])
     }
 
     url_action = {
@@ -182,27 +186,35 @@ class GnaviBot
   end
 end
 
-# def gnavi_bot(options = {})
-#   if @gnavi_bot.nil?
-#     @gnavi_bot = GnaviBot.new(options)
-#   elsif options == {}
-#     @gnavi_bot
-#   else
-#     @gnavi_bot.update(options)
-#   end
-# end
-#
-# gnavi_bot(
-#   longitude: 139.72420290112495,
-#   latitude:  35.69855853730646,
-#   # longitude: 139.763267,
-#   # latitude: 35.670083,
-#   category: 'カレー',
-#   # word: 'カレー',
-# )
+def test
+  def gnavi_bot(options = {})
+    if @gnavi_bot.nil?
+      @gnavi_bot = GnaviBot.new(options)
+    elsif options == {}
+      @gnavi_bot
+    else
+      @gnavi_bot.update(options)
+    end
+  end
+
+  gnavi_bot(
+    longitude: 139.72420290112495,
+    latitude:  35.69855853730646,
+    # longitude: 139.763267,
+    # latitude: 35.670083,
+    category: 'カレー',
+    # word: 'カレー',
+  )
+
+  p gnavi_bot.to_map_url(139.72420290112495, 35.69855853730646)
+
 #
 # gnavi_bot.search
 # ap gnavi_bot.store.rests.count
 # gnavi_bot.select_candidate_by_category
 # ap gnavi_bot.store.cands
 # ap gnavi_bot.rest_carousel
+end
+
+test
+
