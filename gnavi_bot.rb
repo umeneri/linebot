@@ -164,7 +164,7 @@ class GnaviBot
       title: title,
       text: text,
       actions: actions,
-      thumbnailImageUrl: image_url
+      # thumbnailImageUrl: image_url
     }
 
 
@@ -217,4 +217,5 @@ def test
 end
 
 # test
+    # longitude: 139.763267,
 
