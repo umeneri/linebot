@@ -36,6 +36,11 @@ get '/gnavi' do
   'gnavi'
 end
 
+get '/thumbnail.png' do
+  content_type :png
+  send_file "thumbnail.png"
+end
+
 def gnavi_bot(options = {})
   if @gnavi_bot.nil?
     @gnavi_bot = GnaviBot.new(options)

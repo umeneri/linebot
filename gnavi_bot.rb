@@ -69,7 +69,7 @@ class GnaviBot
     if url.class == String
       url.gsub(/https?/, 'https')
     else
-      nil
+      "https://curry-linebot.herokuapp.com/thumbnail.png"
     end
   end
 
@@ -127,11 +127,11 @@ class GnaviBot
         type: "buttons",
         title: title,
         text: text,
+        thumbnailImageUrl: image_url,
         actions: actions,
       }
     }
 
-    message[:template][:thumbnailImageUrl] = image_url if image_url
 
     message
   end
@@ -164,9 +164,9 @@ class GnaviBot
       title: title,
       text: text,
       actions: actions,
+      thumbnailImageUrl: image_url
     }
 
-    message[:thumbnailImageUrl] = image_url if image_url
 
     message
   end
@@ -198,22 +198,22 @@ def test
   end
 
   gnavi_bot(
-    longitude: 139.72420290112495,
-    latitude:  35.69855853730646,
-    # longitude: 139.763267,
+    latitude:  35.708467,
+    longitude: 139.710944,
     # latitude: 35.670083,
+    # longitude: 139.763267,
     category: 'カレー',
     # word: 'カレー',
   )
 
-  p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
+  # p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
 
-#
-# gnavi_bot.search
-# ap gnavi_bot.store.rests.count
-# gnavi_bot.select_candidate_by_category
-# ap gnavi_bot.store.cands
-# ap gnavi_bot.rest_carousel
+  #
+  gnavi_bot.search
+  # ap gnavi_bot.store.rests.count
+  gnavi_bot.select_candidate_by_category
+  ap gnavi_bot.store.cands
+  ap gnavi_bot.rest_carousel
 end
 
 # test
