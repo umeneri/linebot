@@ -103,7 +103,7 @@ post '/callback' do
         ap message
         p client.reply_message(event['replyToken'], message).inspect
       end
-    when Line::Bot::Event::PostBack
+    when Line::Bot::Event::Postback
         p 'postback'
         ap event
 
