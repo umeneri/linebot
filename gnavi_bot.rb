@@ -156,9 +156,9 @@ class GnaviBot
     }
 
     image_url = to_https(rest['image_url'])
-    title = "#{ rest['name']} #{rest['name_kana']}"
-    text = build_rest_detail(rest)
-    actions = [map_action, url_action, category_action]
+    title = "#{ rest['name']} #{rest['name_kana']}"[0..39]
+    text = build_rest_detail(rest)[0..60]
+    actions = [map_action, url_action, category_action].first(3)
 
     message = {
       title: title,
