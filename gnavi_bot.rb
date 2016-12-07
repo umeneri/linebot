@@ -74,7 +74,7 @@ class GnaviBot
   end
 
   def to_map_url(latitude, longitude)
-    "https://www.google.com/maps/preview/@#{"%.7f" % longitude},#{"%.7f" % latitude},15z"
+    "https://www.google.com/maps/preview/@#{"%.7f" % latitude},#{"%.7f" % longitude},15z"
   end
 
   # thumbnailImageUrl  String  画像のURL (1000文字以内)
@@ -206,7 +206,7 @@ def test
     # word: 'カレー',
   )
 
-  p gnavi_bot.to_map_url(139.72420290112495, 35.69855853730646)
+  p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
 
 #
 # gnavi_bot.search
@@ -216,5 +216,5 @@ def test
 # ap gnavi_bot.rest_carousel
 end
 
-test
+# test
 
