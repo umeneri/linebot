@@ -50,6 +50,7 @@ class GnaviStore
       category_l: @category,
     )
 
+    return @rests = [] unless @rests
     flat_hash
     filter_rests
   end
@@ -57,6 +58,8 @@ class GnaviStore
   def flat_hash()
     filter = %w(id name name_kana latitude longitude category url url_mobile
   address tel opentime holiday budget party lunch)
+
+    @rests = [@rests] if @rests.class == Hash
 
     @rests = @rests.map! do |rest|
       dist = rest.select do |key, value|
@@ -200,12 +203,15 @@ end
 # GnaviStore.test_opening
 
 # gs = GnaviStore.new(
-#   longitude: 139.763267,
-#   latitude: 35.670083,
+#     longitude: 139.72420290112495,
+#   latitude: 35.69855853730646,
+#   #
+#   # longitude: 139.763267,
+#   # latitude: 35.670083,
 #   category: 'カレー',
 #   # word: 'カレー',
 # )
-
+#
 # gs.search_with_present_location
 # gs.filter_rests
 # # pp '++++++++++++++++++++++++++++++'

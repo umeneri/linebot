@@ -64,7 +64,7 @@ class GnaviBot
   end
 
   def rest_carousel
-    build_carousel(@store.cands.first(5))
+    build_carousel(@store.cands.first(5)) if @store.cands
   end
 
   # View
@@ -186,14 +186,17 @@ def gnavi_bot(options = {})
   end
 end
 
-gnavi_bot(
-  longitude: 139.763267,
-  latitude: 35.670083,
-  category: 'カレー',
-  # word: 'カレー',
-)
-
-gnavi_bot.search
-gnavi_bot.select_candidate_by_category
-ap gnavi_bot.store.cands
-ap gnavi_bot.rest_carousel
+# gnavi_bot(
+#   longitude: 139.72420290112495,
+#   latitude:  35.69855853730646,
+#   # longitude: 139.763267,
+#   # latitude: 35.670083,
+#   category: 'カレー',
+#   # word: 'カレー',
+# )
+#
+# gnavi_bot.search
+# ap gnavi_bot.store.rests.count
+# gnavi_bot.select_candidate_by_category
+# ap gnavi_bot.store.cands
+# ap gnavi_bot.rest_carousel
