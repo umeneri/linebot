@@ -45,9 +45,11 @@ get '/category' do
   json
 end
 
-def gnavi_bot(options)
-  if @gnavi_bot
+def gnavi_bot(options = {})
+  if @gnavi_bot.nil?
     @gnavi_bot = GnaviBot.new(options)
+  elsif options == {}
+    @gnavi_bot
   else
     @gnavi_bot.update(options)
   end

@@ -176,16 +176,24 @@ class GnaviBot
   end
 end
 
-# gnavi_bot = GnaviBot.new(
-#   longitude: 139.763267,
-#   latitude: 35.670083,
-#   category: 'カレー',
-#   # word: 'カレー',
-# )
-#
-# gnavi_bot.search
-# gnavi_bot.select_candidate_by_category
-# ap gnavi_bot.store.cands
-# ap gnavi_bot.rest_carousel
-#
-#
+def gnavi_bot(options = {})
+  if @gnavi_bot.nil?
+    @gnavi_bot = GnaviBot.new(options)
+  elsif options == {}
+    @gnavi_bot
+  else
+    @gnavi_bot.update(options)
+  end
+end
+
+gnavi_bot(
+  longitude: 139.763267,
+  latitude: 35.670083,
+  category: 'カレー',
+  # word: 'カレー',
+)
+
+gnavi_bot.search
+gnavi_bot.select_candidate_by_category
+ap gnavi_bot.store.cands
+ap gnavi_bot.rest_carousel
