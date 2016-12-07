@@ -4,14 +4,54 @@ require "awesome_print"
 require './gnavi_client'
 require 'active_support/time'
 
-class GnaviStore
-  # attr: latitude, longitude, word
+# Store
+# 候補が開店しているか
+# 候補の距離を計算
+# 候補を距離順に並べ替え
+# 候補の金額を計算
+# 候補をカテゴリでgroup_by
 
+# データストアから最初の候補を選択
+# データストアから前候補を除外した候補を選択 (次の、別の)
+# データストアから前候補より安いor高い候補を選択
+# データストアから前候補より近いor遠い候補を選択
+# データストアからジャンルを指定して候補を選択
+# データストアからフリーワードを指定して検索
+
+
+class GnaviStore
+  attr_reader :rests, :cands
+
+  # attr: latitude, longitude, word, category, rest
   def initialize(options = {})
     options.each do |key, value|
       instance_variable_set("@#{key}", value)
     end
     yield(self) if block_given?
+  end
+
+  def update(options = {})
+    options.each do |key, value|
+      instance_variable_set("@#{key}", value)
+    end
+
+    yield(self) if block_given?
+  end
+
+  # @return : [hash]
+  def search_with_present_location
+    # rests = JSON.load(File.read('test.json')).dig('rest')
+    @rests = GnaviClient.search_with_present_location(
+      latitude: @latitude,
+      longitude: @longitude,
+      range: 2,
+      hit_per_page: 100,
+      # word: @word,
+      category_l: @category,
+    )
+
+    flat_hash
+    filter_rests
   end
 
   def flat_hash()
@@ -36,21 +76,6 @@ class GnaviStore
     end
 
     @rests
-  end
-
-  # @return : [hash]
-  def search_with_present_location
-    # rests = JSON.load(File.read('test.json')).dig('rest')
-    @rests = GnaviClient.search_with_present_location(
-      latitude: @latitude,
-      longitude: @longitude,
-      range: 2,
-      hit_per_page: 100,
-      # word: @word,
-      category_l: @category,
-    )
-
-    flat_hash
   end
 
   # @param holiday String
@@ -116,7 +141,7 @@ class GnaviStore
     rest['distance'] = distance(rest, @latitude, @longitude)
   end
 
-  def filter_rests()
+  def filter_rests
     p 'rest count', @rests.size
 
     @rests = @rests.select do |rest|
@@ -148,11 +173,11 @@ class GnaviStore
   end
 
   def group_candidate(key)
-    cand_groups = @cands.group_by do |rest|
+    cand_groups = @rests.group_by do |rest|
       rest[key]
     end
 
-    cand_groups.map do |k, v|
+    @cands = cand_groups.map do |k, v|
       p 'group', k
       # ap v
       filter_in_group_with_amount(v)
@@ -174,19 +199,19 @@ end
 
 # GnaviStore.test_opening
 
-gs = GnaviStore.new(
-  longitude: 139.763267,
-  latitude: 35.670083,
-  category: 'カレー',
-  # word: 'カレー',
-)
+# gs = GnaviStore.new(
+#   longitude: 139.763267,
+#   latitude: 35.670083,
+#   category: 'カレー',
+#   # word: 'カレー',
+# )
 
-gs.search_with_present_location
-gs.filter_rests
+# gs.search_with_present_location
+# gs.filter_rests
+# # pp '++++++++++++++++++++++++++++++'
+# # ap gs.group_candidate('category_name_l')
 # pp '++++++++++++++++++++++++++++++'
-# ap gs.group_candidate('category_name_l')
-pp '++++++++++++++++++++++++++++++'
-ap gs.select_candidate_by_name(['category', 'pr', 'category_name_l'], 'カレー')
+# ap gs.select_candidate_by_name(['category', 'pr', 'category_name_l'], 'カレー')
 
 # rests = gs.search_with_present_location.map do |rest|
 #   rest.select do |k, v|
@@ -198,112 +223,3 @@ ap gs.select_candidate_by_name(['category', 'pr', 'category_name_l'], 'カレー
 #   GnaviStore.opening?(rest)
 # end
 # ap rests
-
-
-# ap rests[0]
-# ap build_rest_buttons(rests[0])
-
-# Store
-# 候補が開店しているか
-# 候補の距離を計算
-# 候補を距離順に並べ替え
-# 候補の金額を計算
-# 候補をカテゴリでgroup_by
-
-# データストアから最初の候補を選択
-# データストアから前候補を除外した候補を選択 (次の、別の)
-# データストアから前候補より安いor高い候補を選択
-# データストアから前候補より近いor遠い候補を選択
-# データストアからジャンルを指定して候補を選択
-# データストアからフリーワードを指定して検索
-
-
-# Text
-# イントロの説明
-# 詳細な使い方説明
-# 画像など未対応の場合の説明
-# フリーワードを促す説明
-# 位置情報を促す説明
-# ヒット件数の説明
-# 次の候補を促す説明
-
-# View
-# OS別に電話番号のアプリ起動リンク作成
-# OS別にgoogle mapのアプリ起動リンク作成
-# 距離を歩いてx分に変換
-# URLをhttpsへ変換
-# 候補のカルーセルを作成
-
-def build_rest_detail(rest)
-  s = "#{rest['category_name_l']}/#{rest['category_name_s']}/#{rest['category']}, #{rest['budget']}, #{rest['lunch']}, #{rest['lunch']}"
-  s
-end
-
-def to_https(url)
-  if url.class == String
-    url.gsub(/https?/, 'https')
-  else
-    nil
-  end
-end
-
-# View
-# thumbnailImageUrl  String  画像のURL (1000文字以内)
-# HTTPS
-# JPEGまたはPNG
-# 縦横比 1:1.51
-# 縦横最大1024px
-# 最大1MB
-# title  String  タイトル
-# 40文字以内
-# text  String  説明文
-# 画像もタイトルも指定しない場合：160文字以内
-# 画像またはタイトルを指定する場合：60文字以内
-# actions  Array of Template Action  ボタン押下時のアクション
-# 最大4個
-def build_rest_buttons(rest)
-  map_action = {
-    "type": "postback",
-    "label": "ここにする",
-    "data": "action=map&latitude=#{rest['latitude']}&longitude=#{rest['longitude']}"
-  }
-
-  tel_action = {
-    "type": "postback",
-    "label": "電話する",
-    "data": "action=tel&tel=#{rest['tel']}"
-  }
-
-  url_action = {
-    "type": "uri",
-    "label": "もっと見る",
-    "uri": rest['url']
-  }
-
-  category_action = {
-    "type": "postback",
-    "label": "同じジャンル",
-    "data": "action=category&category=#{rest['category']}"
-  }
-
-  image_url = to_https(rest['image_url'])
-  title = "#{ rest['name']} #{rest['name_kana']}"
-  text = build_rest_detail(rest)
-  actions = [map_action, tel_action, url_action, category_action]
-
-  message = {
-    type: "template",
-    altText: "this is a buttons template",
-    template: {
-      type: "buttons",
-      title: title,
-      text: text,
-      actions: actions,
-    }
-  }
-
-  message[:template][:thumbnailImageUrl] = image_url if image_url
-
-  message
-end
-

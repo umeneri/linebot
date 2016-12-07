@@ -2,7 +2,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'logger'
 require 'line/bot'
-require './gnavi_search'
+require './gnavi_bot'
 
 logger = Logger.new('sinatra.log')
 
@@ -26,36 +26,32 @@ get '/erb_template_page' do
   erb :erb_template_page
 end
 
-
-def rest_buttons(latitude: 35.670083, longitude: 139.763267)
-  # rests = GnaviClient.search_with_present_location(
-  #   latitude: latitude,
-  #   longitude: longitude,
-  #   range: 2,
-  #   hit: 5,
-  #   word: '寿司',
-  # )
-
-  rests = search_with_present_location(
-    latitude: 35.670083,
-    longitude: 139.763267,
-    word: '寿司',
-    # word: 'カレー',
-  )
-
-  build_rest_buttons(rests[0])
-end
-
-
 get '/gnavi' do
   logger.info 'rest_buttons'
+  # json = JSON.pretty_generate(gnavi_bot.rest_buttons).gsub(/\n/, '<br>')
+  # logger.info json
+  #
+  # json
 
-  json = JSON.pretty_generate(rest_buttons).gsub(/\n/, '<br>')
+  'gnavi'
+end
+
+get '/category' do
+  logger.info 'category'
+
+  json = JSON.pretty_generate(gnavi_bot.rest_buttons).gsub(/\n/, '<br>')
   logger.info json
 
   json
 end
 
+def gnavi_bot(options)
+  if @gnavi_bot
+    @gnavi_bot = GnaviBot.new(options)
+  else
+    @gnavi_bot.update(options)
+  end
+end
 
 def client
   @client ||= Line::Bot::Client.new { |config|
@@ -101,10 +97,16 @@ post '/callback' do
         p event.message['latitude']
         p event.message['longitude']
 
-        message = rest_buttons(latitude: event.message['latitude'],
-                               longitude: event.message['longitude'])
+        gnavi_bot(latitude: event.message['latitude'],
+                  longitude: event.message['longitude'],
+                 category: 'カレー',
+                 )
+        gnavi_bot.search
+        gnavi_bot.select_candidate_by_category
+        ap gnavi_bot.store.cands
+        message = gnavi_bot.rest_carousel
 
-        p message
+        ap message
         p client.reply_message(event['replyToken'], message).inspect
       end
     end
