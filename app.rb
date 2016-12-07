@@ -93,7 +93,7 @@ post '/callback' do
         gnavi_bot(latitude: event.message['latitude'],
                   longitude: event.message['longitude'],
                   category: 'カレー',
-                  range: 4,
+                  range: 2,
                  )
         gnavi_bot.search
         gnavi_bot.select_candidate_by_category
