@@ -103,10 +103,24 @@ post '/callback' do
         gnavi_bot.search
         gnavi_bot.select_candidate_by_category
         ap gnavi_bot.store.cands
-        message = gnavi_bot.rest_carousel
 
-        ap message
-        p client.reply_message(event['replyToken'], message).inspect
+        credit_message = {
+          type: 'text',
+          text: 'Powered by ぐるなび'
+        }
+
+        result_message = {
+          type: 'text',
+          text: '結果です'
+        }
+
+        carousel_message = gnavi_bot.rest_carousel
+
+        messages = [credit_message, result_message, carousel_message]
+
+        ap messages
+
+        p client.reply_message(event['replyToken'], messages).inspect
       end
     when Line::Bot::Event::Postback
         p 'postback'

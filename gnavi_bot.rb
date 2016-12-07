@@ -143,6 +143,12 @@ class GnaviBot
       "uri": to_map_url(rest['latitude'], rest['longitude'])
     }
 
+    # loc_action = {
+    #   "type": "postback",
+    #   "label": "位置を見る",
+    #   "data": "action=loc&loc=#{rest['category']}"
+    # }
+
     url_action = {
       "type": "uri",
       "label": "もっと見る",
@@ -152,7 +158,7 @@ class GnaviBot
     category_action = {
       "type": "postback",
       "label": "同じジャンル",
-      "data": "#{rest['category']}"
+      "data": "action=category&category=#{rest['category']}"
     }
 
     image_url = to_https(rest['image_url'])
@@ -169,6 +175,18 @@ class GnaviBot
 
 
     message
+  end
+
+  def build_location(rest)
+    title = "#{ rest['name']} #{rest['name_kana']}"[0..39]
+
+    {
+      "type": "location",
+      "title": title,
+      "address": rest['address'],
+      "latitude": rest['latitude'],
+      "longitude": rest['longitude'],
+    }
   end
 
   # columns: 最大5個
@@ -217,5 +235,5 @@ def test
 end
 
 # test
-    # longitude: 139.763267,
+# longitude: 139.763267,
 
