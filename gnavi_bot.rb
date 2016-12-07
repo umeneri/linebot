@@ -164,7 +164,7 @@ class GnaviBot
       title: title,
       text: text,
       actions: actions,
-      # thumbnailImageUrl: image_url
+      thumbnailImageUrl: image_url
     }
 
 
