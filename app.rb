@@ -125,7 +125,7 @@ post '/callback' do
       end
     when Line::Bot::Event::Postback
         p 'postback'
-        ap event
+        ap event['postback']
         ap messages = gnavi_bot.messages_with_postback(event)
 
         # category_name_l = event['postback']['data']

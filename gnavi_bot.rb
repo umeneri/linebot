@@ -272,7 +272,7 @@ class GnaviBot
   end
 
   def messages_with_postback(event)
-    ap url_decode(event.message['postback']['data'])
+    ap url_decode(event['postback']['data'])
 
     params = Hash[url_decode(event.message['postback']['data'])]
 
