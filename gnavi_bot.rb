@@ -154,7 +154,9 @@ class GnaviBot
 
     params = {
       'action': 'location',
-      'id': rest['id']
+      'id': rest['id'],
+      'latitude': @latitude,
+      'longitude': @longitude,
     }
 
     loc_action = {
@@ -181,6 +183,8 @@ class GnaviBot
       "label": "同じジャンル",
       "data": url_encode(params),
     }
+
+    p params
 
     image_url = to_https(rest['image_url'])
     title = "#{ rest['name']} #{rest['name_kana']}"[0..39]
@@ -369,49 +373,49 @@ class GnaviBot
 end
 
 
-# def test
-#   def gnavi_bot(options = {})
-#     if @gnavi_bot.nil?
-#       @gnavi_bot = GnaviBot.new(options)
-#     elsif options == {}
-#       @gnavi_bot
-#     else
-#       @gnavi_bot.update(options)
-#     end
-#   end
+def test
+  def gnavi_bot(options = {})
+    if @gnavi_bot.nil?
+      @gnavi_bot = GnaviBot.new(options)
+    elsif options == {}
+      @gnavi_bot
+    else
+      @gnavi_bot.update(options)
+    end
+  end
+
+  # gnavi_bot(
+  #   latitude:  35.708467,
+  #   longitude: 139.710944,
+  #   # latitude: 35.670083,
+  #   # longitude: 139.763267,
+  #   category: 'カレー',
+  #   # word: 'カレー',
+  # )
+
+  event = Event.new(
+    {
+      'latitude' => 35.708467,
+      'longitude' => 139.710944,
+      'postback' => {
+        'data' =>  'action=category&id=g501133'
+      }
+    }
+  )
+
+  # ap event.message
+  ap gnavi_bot.messages_with_location(event)
+  # ap gnavi_bot.messages_with_postback(event)
+
+  # p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
+
+  #
+  # gnavi_bot.search
+  # ap gnavi_bot.store.rests.count
+  # ap gnavi_bot.select_candidate_in_category('カレー')
+  # ap gnavi_bot.store.cands
+  # ap gnavi_bot.rest_carousel
+end
 #
-#   # gnavi_bot(
-#   #   latitude:  35.708467,
-#   #   longitude: 139.710944,
-#   #   # latitude: 35.670083,
-#   #   # longitude: 139.763267,
-#   #   category: 'カレー',
-#   #   # word: 'カレー',
-#   # )
-#
-#   event = Event.new(
-#     {
-#       'latitude' => 35.708467,
-#       'longitude' => 139.710944,
-#       'postback' => {
-#         'data' =>  'action=category&id=g501133'
-#       }
-#     }
-#   )
-#
-#   # ap event.message
-#   ap gnavi_bot.messages_with_location(event)
-#   ap gnavi_bot.messages_with_postback(event)
-#
-#   # p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
-#
-#   #
-#   # gnavi_bot.search
-#   # ap gnavi_bot.store.rests.count
-#   # ap gnavi_bot.select_candidate_in_category('カレー')
-#   # ap gnavi_bot.store.cands
-#   # ap gnavi_bot.rest_carousel
-# end
-#
-# # test
+# test
 #
