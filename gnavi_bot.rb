@@ -317,7 +317,7 @@ class GnaviBot
 
       result_message = {
         type: 'text',
-        text: "#{@store.cand.size}件見つかりました"
+        text: "#{@store.cands.size}件見つかりました"
       }
 
       carousel_message = rest_carousel
