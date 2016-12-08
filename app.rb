@@ -6,21 +6,19 @@ require './gnavi_bot'
 
 logger = Logger.new('sinatra.log')
 
-enable :sessions
 helpers do
   def test(x)
-    p @test
-    # logger.debug @test
+    logger.debug @test
     @test ||= x
   end
 
   def gnavi_bot(options = {})
-    if session[:gnavi_bot].nil?
-      session[:gnavi_bot] = GnaviBot.new(options)
+    if @gnavi_bot.nil?
+      @gnavi_bot = GnaviBot.new(options)
     elsif options == {}
-      session[:gnavi_bot]
+      @gnavi_bot
     else
-      session[:gnavi_bot].update(options)
+      @gnavi_bot.update(options)
     end
   end
 end
@@ -28,13 +26,12 @@ end
 
 get '/' do
   logger.debug test 2
-  # p test 2
   'hello'
 end
 
 get '/ls' do
  logger.debug test  3
- # p test 3
+ p test 3
   ls = `ls`
   p ls
 end

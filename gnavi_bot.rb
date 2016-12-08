@@ -172,6 +172,8 @@ class GnaviBot
     params = {
       'action': 'category',
       'id': rest['id'],
+      'latitude': @latitude,
+      'longitude': @longitude,
     }
 
     category_action = {
@@ -278,10 +280,20 @@ class GnaviBot
 
     pp params
 
+    update(latitude: params['latitude'],
+           longitude: params['longitude'],
+           category: 'カレー',
+           range: 3,
+          )
+
+
     # action
     case params['action']
     when 'category'
-      p params['id']
+      p params
+
+      search
+      select_candidate_by_category
 
       unless @store.rests
         result_message = {
