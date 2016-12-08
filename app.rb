@@ -6,6 +6,18 @@ require './gnavi_bot'
 
 logger = Logger.new('sinatra.log')
 
+helpers do
+  def gnavi_bot(options = {})
+    if @gnavi_bot.nil?
+      @gnavi_bot = GnaviBot.new(options)
+    elsif options == {}
+      @gnavi_bot
+    else
+      @gnavi_bot.update(options)
+    end
+  end
+end
+
 get '/' do
   'hello'
 end
@@ -41,15 +53,6 @@ get '/thumbnail.png' do
   send_file "thumbnail.png"
 end
 
-def gnavi_bot(options = {})
-  if @gnavi_bot.nil?
-    @gnavi_bot = GnaviBot.new(options)
-  elsif options == {}
-    @gnavi_bot
-  else
-    @gnavi_bot.update(options)
-  end
-end
 
 def client
   @client ||= Line::Bot::Client.new { |config|

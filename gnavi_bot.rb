@@ -286,7 +286,7 @@ class GnaviBot
       unless @store.rests
         result_message = {
           type: 'text',
-          text: "エラーが発生しました"
+          text: "エラーが発生しました。候補がありません"
         }
 
         return messages = [result_message]
@@ -299,7 +299,7 @@ class GnaviBot
       unless rest
         result_message = {
           type: 'text',
-          text: "エラーが発生しました"
+          text: "エラーが発生しました。idに該当するものが見つかりません"
         }
 
         return messages = [result_message]
