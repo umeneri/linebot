@@ -95,42 +95,44 @@ post '/callback' do
         p event.message['latitude']
         p event.message['longitude']
 
-        gnavi_bot(latitude: event.message['latitude'],
-                  longitude: event.message['longitude'],
-                  category: 'カレー',
-                  range: 2,
-                 )
-        gnavi_bot.search
-        gnavi_bot.select_candidate_by_category
-        ap gnavi_bot.store.cands
-
-        credit_message = {
-          type: 'text',
-          text: 'Powered by ぐるなび'
-        }
-
-        result_message = {
-          type: 'text',
-          text: '結果です'
-        }
-
-        carousel_message = gnavi_bot.rest_carousel
-
-        messages = [result_message, carousel_message, credit_message]
-
-        ap messages
+        ap messages = gnavi_bot.messages_with_location(event)
+        # gnavi_bot(latitude: event.message['latitude'],
+        #           longitude: event.message['longitude'],
+        #           category: 'カレー',
+        #           range: 2,
+        #          )
+        # gnavi_bot.search
+        # gnavi_bot.select_candidate_by_category
+        # ap gnavi_bot.store.cands
+        #
+        # credit_message = {
+        #   type: 'text',
+        #   text: 'Powered by ぐるなび'
+        # }
+        #
+        # result_message = {
+        #   type: 'text',
+        #   text: '結果です'
+        # }
+        #
+        # carousel_message = gnavi_bot.rest_carousel
+        #
+        # messages = [result_message, carousel_message, credit_message]
+        #
+        # ap messages
 
         p client.reply_message(event['replyToken'], messages).inspect
       end
     when Line::Bot::Event::Postback
         p 'postback'
         ap event
+        ap messages = gnavi_bot.messages_with_postback(event)
 
-        category_name_l = event['postback']['data']
-        gnavi_bot.select_candidate_in_category(category_name_l)
-        ap gnavi_bot.store.cands
-        message = gnavi_bot.rest_carousel
-
+        # category_name_l = event['postback']['data']
+        # gnavi_bot.select_candidate_in_category(category_name_l)
+        # ap gnavi_bot.store.cands
+        # message = gnavi_bot.rest_carousel
+        #
         p client.reply_message(event['replyToken'], message).inspect
     end
   }

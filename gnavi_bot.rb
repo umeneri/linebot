@@ -246,7 +246,7 @@ class GnaviBot
     update(latitude: event.message['latitude'],
            longitude: event.message['longitude'],
            category: 'カレー',
-           range: 2,
+           range: 3,
           )
 
     p @latitude
@@ -254,7 +254,7 @@ class GnaviBot
 
     search
     select_candidate_by_category
-    ap @store.cands
+    @store.cands
 
     credit_message = {
       type: 'text',
@@ -272,18 +272,42 @@ class GnaviBot
   end
 
   def messages_with_postback(event)
-    pp url_decode(event.message['postback'])
-    params = url_decode(event.message['postback']['data'])
+    ap url_decode(event.message['postback']['data'])
+
+    params = Hash[url_decode(event.message['postback']['data'])]
 
     pp params
 
+    # action
     case params['action']
     when 'category'
+      p params['id']
+
+      unless @store.rests
+        result_message = {
+          type: 'text',
+          text: "エラーが発生しました"
+        }
+
+        return messages = [result_message]
+      end
+
       rest = @store.rests.find do |_rest|
         _rest['id'] == params['id']
       end
 
-      select_candidate_in_category(rest['category_name_s'])
+      unless rest
+        result_message = {
+          type: 'text',
+          text: "エラーが発生しました"
+        }
+
+        return messages = [result_message]
+      end
+
+      pp rest
+
+      select_candidate_in_category(rest['category_name_l'])
       ap @store.cands
 
       credit_message = {
@@ -293,7 +317,7 @@ class GnaviBot
 
       result_message = {
         type: 'text',
-        text: "結果です"
+        text: "#{@store.cand.size}件見つかりました"
       }
 
       carousel_message = rest_carousel
@@ -357,14 +381,14 @@ def test
     {
       'latitude' => 35.708467,
       'longitude' => 139.710944,
-      'postback': {
-        'data': 'action=category&id=1'
+      'postback' => {
+        'data' =>  'action=category&id=g501133'
       }
     }
   )
 
-  ap event.message['latitude']
-  # ap gnavi_bot.messages_with_location(event)
+  # ap event.message
+  ap gnavi_bot.messages_with_location(event)
   ap gnavi_bot.messages_with_postback(event)
 
   # p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
@@ -372,10 +396,10 @@ def test
   #
   # gnavi_bot.search
   # ap gnavi_bot.store.rests.count
-  # gnavi_bot.select_candidate_by_category
+  # ap gnavi_bot.select_candidate_in_category('カレー')
   # ap gnavi_bot.store.cands
   # ap gnavi_bot.rest_carousel
 end
 
-# test
+test
 

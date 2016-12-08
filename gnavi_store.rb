@@ -154,7 +154,7 @@ class GnaviStore
       opening?(Time.new(2016, 12, 7, 11), rest['holiday']) && set_amount(rest)
     end
 
-    p 'cand count', @rests.size
+    p 'filterd rest count', @rests.size
 
     @rests
   end
@@ -182,7 +182,8 @@ class GnaviStore
       rest['category_name_l'] == category_name_l
     end
 
-    p 'rest count', @cands.size
+    p 'rest count', @rests.size
+    p 'cand count', @cands.size
 
     filter_with_group(@cands, 'category_name_s')
   end
@@ -197,7 +198,7 @@ class GnaviStore
     end
 
     @cands = cand_groups.map do |k, v|
-      p 'group', k
+      p 'group', k, v.length
       # filter_in_group_with_amount(v)
       cands = sort_cands(v)
       cands.first
