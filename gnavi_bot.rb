@@ -1,5 +1,14 @@
 require './gnavi_store'
 
+class Event
+  attr_reader :message
+
+  def initialize(params)
+    @message = params
+  end
+end
+
+
 # Text
 # イントロの説明
 # 詳細な使い方説明
@@ -61,7 +70,7 @@ class GnaviBot
   # View
 
   def build_rest_detail(rest)
-    s = "#{rest['category_name_l']}/#{rest['category_name_s']}/#{rest['category']}, #{rest['budget']}, #{rest['lunch']}, #{rest['lunch']}"
+    s = "#{rest['category_name_l']}/#{rest['category_name_s']}/#{rest['category']}, #{rest['budget']}, #{rest['lunch']}, #{rest['party']}"
     s
   end
 
@@ -137,17 +146,22 @@ class GnaviBot
   end
 
   def build_column(rest)
-    map_action = {
-      "type": "uri",
-      "label": "地図を見る",
-      "uri": to_map_url(rest['latitude'], rest['longitude'])
+    # map_action = {
+    #   "type": "uri",
+    #   "label": "地図を見る",
+    #   "uri": to_map_url(rest['latitude'], rest['longitude'])
+    # }
+
+    params = {
+      'action': 'location',
+      'id': rest['id']
     }
 
-    # loc_action = {
-    #   "type": "postback",
-    #   "label": "位置を見る",
-    #   "data": "action=loc&loc=#{rest['category']}"
-    # }
+    loc_action = {
+      "type": "postback",
+      "label": "位置を見る",
+      "data": url_encode(params),
+    }
 
     url_action = {
       "type": "uri",
@@ -155,16 +169,22 @@ class GnaviBot
       "uri": rest['url']
     }
 
+    params = {
+      'action': 'category',
+      'id': rest['id'],
+    }
+
     category_action = {
       "type": "postback",
       "label": "同じジャンル",
-      "data": "action=category&category=#{rest['category']}"
+      "data": url_encode(params),
     }
 
     image_url = to_https(rest['image_url'])
     title = "#{ rest['name']} #{rest['name_kana']}"[0..39]
     text = build_rest_detail(rest)[0..60]
-    actions = [map_action, url_action, category_action].first(3)
+    # actions = [map_action, url_action, category_action].first(3)
+    actions = [loc_action, url_action, category_action].first(3)
 
     message = {
       title: title,
@@ -178,14 +198,12 @@ class GnaviBot
   end
 
   def build_location(rest)
-    title = "#{ rest['name']} #{rest['name_kana']}"[0..39]
-
     {
       "type": "location",
-      "title": title,
+      "title": "#{ rest['name']} #{rest['name_kana']}"[0..39],
       "address": rest['address'],
-      "latitude": rest['latitude'],
-      "longitude": rest['longitude'],
+      "latitude": "%.7f" % rest['latitude'].to_f,
+      "longitude": "%.7f" % rest['longitude'].to_f,
     }
   end
 
@@ -202,7 +220,118 @@ class GnaviBot
       }
     }
   end
+
+  def url_encode(enum)
+    URI::encode_www_form(enum)
+  end
+
+  def url_decode(data)
+    q = URI::parse("?" + data).query
+    URI::decode_www_form(q)
+  end
+
+  def url_test
+    cat = 'カレー'
+    hash = {
+      action: 'category',
+      category: cat,
+    }
+
+    p uri = url_encode(hash)
+
+    p url_decode(uri)
+  end
+
+  def messages_with_location(event)
+    update(latitude: event.message['latitude'],
+           longitude: event.message['longitude'],
+           category: 'カレー',
+           range: 2,
+          )
+
+    p @latitude
+    p @longitude
+
+    search
+    select_candidate_by_category
+    ap @store.cands
+
+    credit_message = {
+      type: 'text',
+      text: 'Powered by ぐるなび'
+    }
+
+    result_message = {
+      type: 'text',
+      text: "#{@store.rests.size}件見つかりました"
+    }
+
+    carousel_message = rest_carousel
+
+    [result_message, carousel_message, credit_message]
+  end
+
+  def messages_with_postback(event)
+    pp url_decode(event.message['postback'])
+    params = url_decode(event.message['postback']['data'])
+
+    pp params
+
+    case params['action']
+    when 'category'
+      rest = @store.rests.find do |_rest|
+        _rest['id'] == params['id']
+      end
+
+      select_candidate_in_category(rest['category_name_s'])
+      ap @store.cands
+
+      credit_message = {
+        type: 'text',
+        text: 'Powered by ぐるなび'
+      }
+
+      result_message = {
+        type: 'text',
+        text: "結果です"
+      }
+
+      carousel_message = rest_carousel
+
+      messages = [result_message, carousel_message, credit_message]
+
+    when 'location'
+      rest = @store.rests.find do |_rest|
+        _rest['id'] == params['id']
+      end
+
+      p rest
+
+      if rest
+        loc_message = build_location(rest)
+
+        result_message = {
+          type: 'text',
+          text: "お店の位置です。クリックすると地図が出ます"
+        }
+
+        messages = [result_message, loc_message]
+
+      else
+        result_message = {
+          type: 'text',
+          text: "エラーが発生しました"
+        }
+
+        messages = [result_message]
+      end
+    end
+
+    return  messages
+  end
+
 end
+
 
 def test
   def gnavi_bot(options = {})
@@ -215,25 +344,38 @@ def test
     end
   end
 
-  gnavi_bot(
-    latitude:  35.708467,
-    longitude: 139.710944,
-    # latitude: 35.670083,
-    # longitude: 139.763267,
-    category: 'カレー',
-    # word: 'カレー',
+  # gnavi_bot(
+  #   latitude:  35.708467,
+  #   longitude: 139.710944,
+  #   # latitude: 35.670083,
+  #   # longitude: 139.763267,
+  #   category: 'カレー',
+  #   # word: 'カレー',
+  # )
+
+  event = Event.new(
+    {
+      'latitude' => 35.708467,
+      'longitude' => 139.710944,
+      'postback': {
+        'data': 'action=category&id=1'
+      }
+    }
   )
+
+  ap event.message['latitude']
+  # ap gnavi_bot.messages_with_location(event)
+  ap gnavi_bot.messages_with_postback(event)
 
   # p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
 
   #
-  gnavi_bot.search
+  # gnavi_bot.search
   # ap gnavi_bot.store.rests.count
-  gnavi_bot.select_candidate_by_category
-  ap gnavi_bot.store.cands
-  ap gnavi_bot.rest_carousel
+  # gnavi_bot.select_candidate_by_category
+  # ap gnavi_bot.store.cands
+  # ap gnavi_bot.rest_carousel
 end
 
 # test
-# longitude: 139.763267,
 
