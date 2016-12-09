@@ -185,7 +185,7 @@ class GnaviStore
     p 'rest count', @rests.size
     p 'cand count', @cands.size
 
-    filter_with_group(@cands, 'category_name_s')
+    # filter_with_group(@cands, 'category_name_s')
   end
 
   def group_candidate(key)
