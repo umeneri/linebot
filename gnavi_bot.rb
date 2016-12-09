@@ -251,7 +251,8 @@ class GnaviBot
   def messages_with_location(event)
     update(latitude: event.message['latitude'],
            longitude: event.message['longitude'],
-           category: 'カレー',
+           # category: 'カレー',
+           category: '',
            range: 3,
           )
 
@@ -286,7 +287,8 @@ class GnaviBot
 
     update(latitude: params['latitude'],
            longitude: params['longitude'],
-           category: 'カレー',
+           # category: 'カレー',
+           category: '',
            range: 3,
           )
 
