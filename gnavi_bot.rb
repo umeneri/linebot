@@ -338,7 +338,7 @@ class GnaviBot
 
       carousel_message = rest_carousel
 
-      messages = [result_message, carousel_message, credit_message]
+      return messages = [result_message, carousel_message, credit_message]
 
     when 'location'
       rest = @store.rests.find do |_rest|
@@ -405,7 +405,7 @@ def test
 
   # ap event.message
   ap gnavi_bot.messages_with_location(event)
-  # ap gnavi_bot.messages_with_postback(event)
+  ap gnavi_bot.messages_with_postback(event)
 
   # p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
 

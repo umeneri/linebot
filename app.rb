@@ -145,7 +145,7 @@ post '/callback' do
         # ap gnavi_bot.store.cands
         # message = gnavi_bot.rest_carousel
         #
-        p client.reply_message(event['replyToken'], message).inspect
+        p client.reply_message(event['replyToken'], messages).inspect
     end
   }
 
