@@ -26,9 +26,18 @@ Plan  Limit
 Developer Trial  1,000/分
 その他  10,000/分
 
+友達数制限
+
+# ビジネス観点で？
+ 資金調達
+Chatbotのシナリオツールと音声認識のベンチャーであるWit.aiが創業18カ月で早々にfacebookに買収されたことだ。既に3億5千万円程度の出資を受けていたので、売却額は二桁億円は超えていると思う。
+→ 機械学習ようでは？
+
+[村上福之の「Botと人工知能と俺様」：Chatbotは“第4の産業革命“、乗り遅れてはならない (2/2) - ITmedia エンタープライズ](http://www.itmedia.co.jp/enterprise/articles/1606/10/news032_2.html)
 
 
-status code
+
+
 
 
 
@@ -46,7 +55,7 @@ status code
 PCの使えない場面で使える→移動中とか
 webでググれば？の反論
 → 迅速かつ確実な情報取得 + 情報の簡単共有ルーム
-→ 位置情報取得
+<!-- → 位置情報取得 -->
 → 会話してる感
 
 ボタンでyesno応えられるので、インタラクティブなアンケートに使える
@@ -153,6 +162,51 @@ freeword string フリーワード検索 検索ワードをUTF-8でURLエンコ�
 * カレーと来たら結果のcategory, prからカレーだけを絞込
 * かく小カテゴリごとに1件
 
+必要key
+
+保存よう
+id
+
+検索
+latitude
+longitude
+opentime
+holiday
+budget
+party
+lunch
+
+カテゴリ検索
+category
+category_name_l
+category_name_s
+
+ワード検索
+name
+name_kana
+category
+category_name_l
+category_name_s
+pr
+
+結果出力
+name
+name_kana
+image_url
+category
+category_name_l
+category_name_s
+url
+url_mobile
+address
+tel
+
+あとで使用？
+line
+station
+station_exit
+walk
+
 
 結果カード仕様
 * 画像URL image_url, shop_image1
@@ -185,3 +239,55 @@ freeword string フリーワード検索 検索ワードをUTF-8でURLエンコ�
 築地寿司清 日比谷シャンテ店 ツキジスシセイ ヒビヤシャンテテン
 
 /すし・魚料理・シーフード/寿司/江戸前寿司 寿司, 2500, 1000, 1000
+
+
+# ref
+[herokuでタイムゾーン設定 - Qiita](http://qiita.com/haman29@github/items/773b522b92bbf806ab32)
+
+
+riot-tag使ってる！！！
+hOZPA_hankachikandekuyashigaru_TP_V.jpgttps://tod.tbs.co.jp/program/12445
+
+
+[komagataのブログ](http://docs.komagata.org/tags/holiday_jp/)
+
+
+# 発表
+
+公式
+[【LINE】chatbotの開発・普及に向けて新たな展開を発表、新たなMessaging APIを公開し、開発者への正式提供を開始 | LINE Corporation | ニュース](https://linecorp.com/ja/pr/news/ja/2016/1516)
+
+
+
+* もっと安い候補
+* もっと近い候補
+* さっきの
+<!-- * フリーワード絞込 -->
+<!-- * カルーセル形式で -->
+* ジャンルごと候補☆
+* マップAPI☆
+<!-- * 電話API -->
+<!-- * 取説 -->
+
+
+
+
+## その他
+[LINE BOT とToodledoを連携してLINE上で買い物リストを閲覧・追加する【Playframework Scala】 ｜ Developers.IO](http://dev.classmethod.jp/server-side/line-bot-shopping-list/)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
