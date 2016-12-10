@@ -248,6 +248,20 @@ class GnaviBot
     p url_decode(uri)
   end
 
+  def credit_message
+    {
+      type: 'text',
+      text: 'Powered by ぐるなび'
+    }
+  end
+
+  def result_message(size)
+    {
+      type: 'text',
+      text: "#{size}件見つかりました"
+    }
+  end
+
   def messages_with_location(event)
     update(latitude: event.message['latitude'],
            longitude: event.message['longitude'],
@@ -263,19 +277,10 @@ class GnaviBot
     select_candidate_by_category
     @store.cands
 
-    credit_message = {
-      type: 'text',
-      text: 'Powered by ぐるなび'
-    }
-
-    result_message = {
-      type: 'text',
-      text: "#{@store.rests.size}件見つかりました"
-    }
 
     carousel_message = rest_carousel
 
-    [result_message, carousel_message, credit_message]
+    [result_message(@store.cand.size), carousel_message, credit_message]
   end
 
   def messages_with_postback(event)
@@ -328,19 +333,9 @@ class GnaviBot
       select_candidate_in_category(rest['category_name_l'])
       ap @store.cands
 
-      credit_message = {
-        type: 'text',
-        text: 'Powered by ぐるなび'
-      }
-
-      result_message = {
-        type: 'text',
-        text: "#{@store.cands.size}件見つかりました"
-      }
-
       carousel_message = rest_carousel
 
-      return messages = [result_message, carousel_message, credit_message]
+      return messages = [result_message(@store.cands.size), carousel_message, credit_message]
 
     when 'location'
       rest = @store.rests.find do |_rest|
@@ -371,8 +366,8 @@ class GnaviBot
 
     return  messages
   end
-
 end
+
 
 
 def test
