@@ -30,7 +30,7 @@ class GnaviClient
       hash = get_category_name_l_rest
       out = hash.dig('category_l')&.select do |category|
         category['category_l_name'].include?(name)
-      end.first
+      end&.first
 
       out['category_l_code'] if out
     end
@@ -39,7 +39,7 @@ class GnaviClient
       hash = get_category_name_s_rest
       out = hash.dig('category_s')&.select do |category|
         category['category_s_name'].include?(name)
-      end.first
+      end&.first
 
       out['category_s_code'] if out
     end
