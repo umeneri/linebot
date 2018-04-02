@@ -47,14 +47,18 @@ class GnaviBot
     yield(self) if block_given?
   end
 
+  # store restaulant
+  # @return restaulant
   def search
     @store.search_with_present_location
   end
 
+  # @return candidate
   def select_candidate_by_category
     @store.group_candidate('category_name_l')
   end
 
+  # @return candidate
   def select_candidate_in_category(category_name_l)
     @store.select_candidate_in_category(category_name_l)
   end
@@ -70,8 +74,7 @@ class GnaviBot
   # View
 
   def build_rest_detail(rest)
-    s = "#{rest['category_name_l']}/#{rest['category_name_s']}/#{rest['category']}, #{rest['budget']}, #{rest['lunch']}, #{rest['party']}"
-    s
+    "#{rest['category_name_l']}/#{rest['category_name_s']}/#{rest['category']}, #{rest['budget']}, #{rest['lunch']}, #{rest['party']}"
   end
 
   def to_https(url)
@@ -82,7 +85,7 @@ class GnaviBot
     end
   end
 
-  def to_map_url(latitude, longitude)
+  def map_url(latitude, longitude)
     "https://www.google.com/maps/preview/@#{"%.7f" % latitude},#{"%.7f" % longitude},15z"
   end
 
@@ -103,7 +106,7 @@ class GnaviBot
     map_action = {
       "type": "uri",
       "label": "地図を見る",
-      "uri": to_map_url(rest['latitude'], rest['longitude'])
+      "uri": map_url(rest['latitude'], rest['longitude'])
     }
 
     tel_action = {
@@ -149,7 +152,7 @@ class GnaviBot
     # map_action = {
     #   "type": "uri",
     #   "label": "地図を見る",
-    #   "uri": to_map_url(rest['latitude'], rest['longitude'])
+    #   "uri": map_url(rest['latitude'], rest['longitude'])
     # }
 
     params = {
@@ -404,7 +407,7 @@ def test
   ap gnavi_bot.messages_with_location(event)
   ap gnavi_bot.messages_with_postback(event)
 
-  # p gnavi_bot.to_map_url(35.69855853730646, 139.72420290112495)
+  # p gnavi_bot.map_url(35.69855853730646, 139.72420290112495)
 
   #
   # gnavi_bot.search
