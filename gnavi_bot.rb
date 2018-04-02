@@ -283,7 +283,7 @@ class GnaviBot
 
     carousel_message = rest_carousel
 
-    [result_message(@store.cand.size), carousel_message, credit_message]
+    [result_message(@store.cands.size), carousel_message, credit_message]
   end
 
   def messages_with_postback(event)
